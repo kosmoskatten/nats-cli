@@ -21,11 +21,15 @@ main = do
   opts <- getOptions
   withNats defaultSettings [natsUri opts] $ \nats -> do
     publish nats (cs $ topic opts) (cs <$> replyTo opts) (cs $ payload opts)
-    replicateM_ 10 $ do
+    waitAWhile
+
+waitAWhile :: IO ()
+waitAWhile = do
+  replicateM_ 10 $ do
       putChar '.'
       hFlush stdout
       threadDelay 50000
-    putChar '\n'
+  putChar '\n'
 
 getOptions :: IO Options
 getOptions = execParser options
